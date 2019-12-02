@@ -1,0 +1,16 @@
+version: '2.3'
+services:
+  anogan:
+    build:
+      context: ./Dockerfile
+      dockerfile: Dockerfile-tensorflow-gpu
+    container_name: anogan
+    runtime: nvidia
+    command: /bin/bash
+    ports:
+      - "8000:8888"
+    tty: true
+    volumes:
+      - ./Project:/Project
+      - ../Dataset:/Dataset
+# - /mnt/DsmlLab:/mnt/DsmlLab

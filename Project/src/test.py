@@ -48,17 +48,17 @@ def normalize_brightness(img):
 if __name__ == '__main__':
     # 変更すべき箇所⇓実験ごとに変える。
     settings = {"input_dim": 64, # 入力画像の一辺のpx。特にいじる必要なし
-                "g_weight_path": "../train_result/sample/weights/generator_49.h5", # Gの学習weight
-                "d_weight_path": "../train_result/sample/weights/descriminator_49.h5", # Dの学習weight
+                "g_weight_path": "../train_result/epochs_1500(N001_N010_N011_N020_N001_N035_N021_N030)/weights/generator_49.h5", # Gの学習weight
+                "d_weight_path": "../train_result/epochs_1500(N001_N010_N011_N020_N001_N035_N021_N030)/weights/discriminator_1349.h5", # Dの学習weight
                 "test_dir": "../../../Dataset/2019_June/N001_N010/test/learned_imgs", # テストデータのフォルダ
-                "save_root": "../test_result/sample", # 結果を保存するフォルダ
-                "csv_name": "Normal100_epoch4000" # スコアを記録するcsvファイルのファイル名
+                "save_root": "../test_result/N001_N035_G49_D1349", # 結果を保存するフォルダ
+                "csv_name": "Normal200_epoch1500" # スコアを記録するcsvファイルのファイル名
                 }
     anogan_optim = Adam(lr=0.001, amsgrad=True)
 
     os.makedirs(settings["save_root"], exist_ok=False)
     # 画像のフォルダのパスを入れる
-    test_path_list = glob.glob(settings["test_dir"] + "/*.jpg")
+    test_path_list = glob. glob(settings["test_dir"] + "/*.jpg")
     save_score_path = os.path.join(settings["save_root"], settings["csv_name"] + ".csv")
     # 使用したい重みのパスを入れる
     weight_epoch = int(os.path.basename(settings["g_weight_path"]).replace("generator_", "").replace(".h5", "")) + 1

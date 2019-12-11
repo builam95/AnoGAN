@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-def loss_plotter(loss_csv_path):
+def loss_plotter(loss_csv_path, EPOCHS):
     """
     まずはじめにloss.csvファイルの一行目にg_loss,d_lossと手動で挿入する
     :param loss_csv:
@@ -16,7 +16,7 @@ def loss_plotter(loss_csv_path):
     epochs = range(len(g_loss))
 
     # 損失値をプロット
-    plt.xlim(0, 4000)
+    plt.xlim(0, EPOCHS-1)
     plt.ylim(0, 20)
     plt.plot(epochs, g_loss, linestyle="-", color="green", label="G loss")
     plt.plot(epochs, d_loss, linestyle="-", color="blue", label="D loss")

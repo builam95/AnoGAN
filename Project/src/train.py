@@ -17,10 +17,11 @@ def denormalize(X):
     return ((X + 1.0) / 2.0 * 255.0).astype(dtype=np.uint8)
 
 
-def log_plotter(train_path, g_optim, d_optim, epochs, ETA, save_dir):
+def log_plotter(train_directories, g_optim, d_optim, epochs, ETA, save_dir):
     save_path = os.path.join(save_dir, "log.txt")
     with open(save_path, 'a') as f:
-        f.write("train paht: {}".format(train_path) + "\n")
+        for train_path in train_directories:
+            f.write("train paht: {}".format(train_path) + "\n")
         f.write("epoch　は {}".format(epochs) + "\n")
         f.write("処理にかかった時間は {}".format(str(ETA)) + "[sec]" + '\n')
         f.write("g_optim: {}".format(g_optim.get_config()) + "\n")
@@ -69,7 +70,7 @@ def calc_brightness(imgPaths):
     return ave, std
 
 
-def load_train(train_dir):
+def load_train(train_directories):
     """
     フォルダ内にある画像を使って、trainデータにする
 
@@ -83,32 +84,41 @@ def load_train(train_dir):
     X_train: ndarray
     DCGANに入力するtrainデータ
     """
-    train_path_list = glob.glob(train_dir + "/*")
-    print(train_path_list)
-
-    # ave, std = calc_brightness(train_path_list)
     X_train = []
-    for train_img_path in train_path_list:
-        train_img = cv2.imread(train_img_path)
-        # 画像の明るさを正規化
-        # train_img = normalize_brightness(train_img, ave=ave, std=std)
-        # 明るさを正規化した画像を保存
-        # save_path = os.path.join("/home/mizuno/PycharmProjects/AnoGAN_keys/Dataset/N021_N030/calc_kido_train",
-        #                          os.path.basename(train_img_path))
-        # cv2.imwrite(save_path, train_img)
-        X_train.append(train_img)
+    for train_dir in train_directories:
+        train_path_list = glob.glob(train_dir + "/*")
+        print(train_path_list)
+
+        # ave, std = calc_brightness(train_path_list)
+        
+        for train_img_path in train_path_list:
+            train_img = cv2.imread(train_img_path)
+            # 画像の明るさを正規化
+            # train_img = normalize_brightness(train_img, ave=ave, std=std)
+            # 明るさを正規化した画像を保存
+            # save_path = os.path.join("/home/mizuno/PycharmProjects/AnoGAN_keys/Dataset/N021_N030/calc_kido_train",
+            #                          os.path.basename(train_img_path))
+            # cv2.imwrite(save_path, train_img)
+            X_train.append(train_img)
     X_train = np.array(X_train)
+    print('画像枚数 :', len(X_train))
     # import pdb
     # pdb.set_trace()
     return X_train
 
 
 if __name__ == '__main__':
-    settings = {"input_dim": 64, "batch_size": 16, "epochs": 50, 
-                "train_path": "../../../Dataset/N001_N010/train",
-                "save_folder": "epochs_10",
-                "g_optim": Adam(lr=0.001, beta_1=0.5, beta_2=0.9),
-                "d_optim": Adam(lr=0.001, beta_1=0.5, beta_2=0.9)
+    EPOCHS = 1500
+    FOLDERS = ['N001_N010','N011_N020','N001_N035','N021_N030']
+    TRPATH = []
+    for folder in FOLDERS :
+        TRPATH.append("../../../Dataset/2019_June/"+folder+"/train")
+    settings = {"input_dim": 64, "batch_size": 16, "epochs": EPOCHS, 
+                "train_path": TRPATH,
+                "save_folder": "epochs_" + str(EPOCHS)+'('+'_'.join(FOLDERS)+')',
+                "g_optim": Adam(lr=0.001,beta_1 = 0.5,beta_2 = 0.9),
+                "d_optim": Adam(lr=0.001, beta_1 = 0.5,beta_2 = 0.9),
+                
                 }
 
     start_time = datetime.datetime.now()
@@ -153,8 +163,8 @@ if __name__ == '__main__':
             f.write(str(g_loss) + ',' + str(d_loss) + '\n')
 
     # lossのプロット
-    loss_plotter(loss_csv_path=loss_path)
+    loss_plotter(loss_csv_path=loss_path, EPOCHS=EPOCHS)
     ETA = datetime.datetime.now() - start_time
     print("処理にかかった時間は {} ".format(ETA))
     # 学習に関する記録を保存
-    log_plotter(train_path=settings["train_path"], g_optim=settings["g_optim"], d_optim=settings["d_optim"], epochs=settings["epochs"], ETA=ETA, save_dir=save_root)
+    log_plotter(train_directories=settings["train_path"], g_optim=settings["g_optim"], d_optim=settings["d_optim"], epochs=settings["epochs"], ETA=ETA, save_dir=save_root)
